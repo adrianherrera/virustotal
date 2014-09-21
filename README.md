@@ -1,4 +1,4 @@
 virustotal-api-script
 =====================
 
-Simple command-line script to interact with the virustotal-api
+A simple command-line script to interact with the virustotal-api (see https://github.com/blacktop/virustotal-api).
