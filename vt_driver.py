@@ -144,13 +144,14 @@ def parse_config(conf_file):
 
     return None
 
-def pretty_print_json(json_data):
+def pretty_print_json(json_data, output=sys.stdout):
     """ Pretty-print JSON data.
 
     Args:
         json_data: The JSON data to pretty-print.
+        output: A file-like object (stream) to pretty-print the JSON data to.
     """
-    print(json.dumps(json_data, sort_keys=True, indent=4))
+    print(json.dumps(json_data, sort_keys=True, indent=4), file=output)
 
 def check_num_args(args):
     """ Checks the number of arguments does not exceed the maximum
