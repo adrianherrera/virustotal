@@ -186,7 +186,7 @@ def file_rescan(virus_total, hash_list):
     response = virus_total.rescan_file(','.join(hash_list))
     pretty_print_json(response)
 
-def file_report(virus_total, hash_list):
+def file_report(virus_total, hash_list, output=sys.stdout):
     """ Retrieves a concluded scan report for a given file (designated by an
     MD5/SHA1/SHA256 hash).
 
@@ -194,10 +194,11 @@ def file_report(virus_total, hash_list):
         virus_total: VirusTotal API object.
         hash_list: A list of MD5/SHA1/SHA245 hashes to retrieve scan reports
         for.
+        output: A file-like object (stream) to pretty-print the file report to.
     """
     check_num_args(hash_list)
     response = virus_total.get_file_report(','.join(hash_list))
-    pretty_print_json(response)
+    pretty_print_json(response, output)
 
 def file_behaviour(virus_total, hash_):
     """ Get the behaviour for a given file (designated by an MD5/SHA1/SHA256
@@ -269,8 +270,10 @@ def file_download(virus_total, hash_, output_dir):
     with open(os.path.join(output_dir, hash_), 'wb') as out_file:
         out_file.write(response)
 
-    # Get the report for this sample as well
-    file_report(virus_total, [hash_])
+    # Get the report for this sample as well. Write the report to a file in the
+    # output directory specified
+    file_report(virus_total, [hash_],
+                os.path.join(output_dir, hash_ + '.report'))
 
 def url_scan(virus_total, url_list):
     """ Submit a list of URLs to scan.
