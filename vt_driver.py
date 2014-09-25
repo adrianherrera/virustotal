@@ -45,8 +45,8 @@ def parse_args():
     default_conf_file = os.path.join(os.path.expanduser('~'), '.vtapi')
 
     # Construct the main parser
-    parser = argparse.ArgumentParser(description=('Interact with the '
-                                                  'VirusTotal API.'))
+    parser = argparse.ArgumentParser(description='Interact with the '
+                                                 'VirusTotal API.')
     parser.add_argument('-c', '--config', action='store',
                         default=default_conf_file,
                         help='Path to the configuration file')
@@ -62,20 +62,20 @@ def parse_args():
         help=('Rescan previously submitted file(s) without having to '
               'resubmit, thus saving bandwidth'))
     rescan_parser.add_argument('hash', nargs='+', action='store',
-                               help=('List of MD5/SHA1/SHA256 hashes (up to '
-                                     '25)'))
+                               help='List of MD5/SHA1/SHA256 hashes (up to '
+                                    '25)')
 
     # File report subparser
     file_report_parser = subparsers.add_parser('file-report',
         help='Retrieve file scan results')
     file_report_parser.add_argument('hash', nargs='+', action='store',
-                                    help=('List of MD5/SHA1/SHA256 hashes (up '
-                                          'to 25)'))
+                                    help='List of MD5/SHA1/SHA256 hashes (up '
+                                         'to 25)')
 
     # Behaviour subparser
     behaviour_parser = subparsers.add_parser('behaviour',
-        help=('Get a report on the behaviour of a file in a sandbox '
-              'environment'))
+        help='Get a report on the behaviour of a file in a sandbox '
+             'environment')
     behaviour_parser.add_argument('hash', action='store',
                                   help='An MD5/SHA1/SHA256 hash')
 
@@ -86,17 +86,17 @@ def parse_args():
                              help='An MD5/SHA1/SHA256 hash')
     pcap_parser.add_argument('-o', '--output-dir', action='store',
                              default=os.getcwd(),
-                             help=('Output directory to write downloaded pcap '
-                                   'file to (defaults to the current working '
-                                   'directory)'))
+                             help='Output directory to write downloaded pcap '
+                                  'file to (defaults to the current working '
+                                  'directory)')
 
     # Search subparser
     search_parser = subparsers.add_parser('search',
         help='Search for files')
     search_parser.add_argument('query', action='store',
-                               help=('The search query, in accordance with '
-                                     'https://www.virustotal.com/intelligence/'
-                                     'help/file-search/#search-modifiers'))
+                               help='The search query, in accordance with '
+                                    'https://www.virustotal.com/intelligence/'
+                                    'help/file-search/#search-modifiers')
 
     # File download subparser
     download_parser = subparsers.add_parser('download',
@@ -105,9 +105,9 @@ def parse_args():
                                  help='An MD5/SHA1/SHA256 hash')
     download_parser.add_argument('-o', '--output-dir', action='store',
                                  default=os.getcwd(),
-                                 help=('Output directory to write downloaded '
-                                       'file to (defaults to the current '
-                                       'working directory)'))
+                                 help='Output directory to write downloaded '
+                                      'file to (defaults to the current '
+                                      'working directory)')
 
     # URL scan subparser
     url_scan_parser = subparsers.add_parser('url-scan',
@@ -168,8 +168,8 @@ def check_num_args(args):
         hash_list: A list of arguments.
     """
     if len(args) > 25:
-        error(('The VT Private API only allows a maximum of 25 arguments to '
-               'be specified in a single query'))
+        error('The VT Private API only allows a maximum of 25 arguments to be '
+              'specified in a single query')
 
 def file_scan(virus_total, file_to_scan):
     """ Submit a single file to be scanned by VirusTotal.
