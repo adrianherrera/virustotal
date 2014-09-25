@@ -59,16 +59,18 @@ def parse_args():
 
     # Rescan subparser
     rescan_parser = subparsers.add_parser('rescan',
-        help=('Rescan a previously submitted file without having to resubmit, '
-              'thus saving bandwidth'))
+        help=('Rescan previously submitted file(s) without having to '
+              'resubmit, thus saving bandwidth'))
     rescan_parser.add_argument('hash', nargs='+', action='store',
-                               help='List of MD5/SHA1/SHA256 hashes')
+                               help=('List of MD5/SHA1/SHA256 hashes (up to '
+                                     '25)'))
 
     # File report subparser
     file_report_parser = subparsers.add_parser('file-report',
-        help='Get file scan results')
+        help='Retrieve file scan results')
     file_report_parser.add_argument('hash', nargs='+', action='store',
-                                    help='List of MD5/SHA1/SHA256 hashes')
+                                    help=('List of MD5/SHA1/SHA256 hashes (up '
+                                          'to 25)'))
 
     # Behaviour subparser
     behaviour_parser = subparsers.add_parser('behaviour',
@@ -85,15 +87,16 @@ def parse_args():
     pcap_parser.add_argument('-o', '--output-dir', action='store',
                              default=os.getcwd(),
                              help=('Output directory to write downloaded pcap '
-                                   'file to'))
+                                   'file to (defaults to the current working '
+                                   'directory)'))
 
     # Search subparser
     search_parser = subparsers.add_parser('search',
         help='Search for files')
     search_parser.add_argument('query', action='store',
-                               help=('The search query in accordance with'
+                               help=('The search query, in accordance with '
                                      'https://www.virustotal.com/intelligence/'
-                                     'help/file-search'))
+                                     'help/file-search/#search-modifiers'))
 
     # File download subparser
     download_parser = subparsers.add_parser('download',
@@ -103,22 +106,23 @@ def parse_args():
     download_parser.add_argument('-o', '--output-dir', action='store',
                                  default=os.getcwd(),
                                  help=('Output directory to write downloaded '
-                                       'file to'))
+                                       'file to (defaults to the current '
+                                       'working directory)'))
 
     # URL scan subparser
     url_scan_parser = subparsers.add_parser('url-scan',
-        help='Submit a URL to be scanned')
-    url_scan_parser.add_argument('url', nargs='+', help='URL(s)')
+        help='Submit URL(s) to be scanned')
+    url_scan_parser.add_argument('url', nargs='+', help='URL(s) (up to 25)')
 
     # URL report subparser
     url_report_parser = subparsers.add_parser('url-report',
         help='Get URL scan results')
-    url_report_parser.add_argument('url', nargs='+', help='URL(s)')
+    url_report_parser.add_argument('url', nargs='+', help='URL(s) (up to 25)')
 
     # IP report subparser
     ip_report_parser = subparsers.add_parser('ip-report',
         help='Get information about an IP address')
-    ip_report_parser.add_argument('ip', action='store', help='A IPv4 address')
+    ip_report_parser.add_argument('ip', action='store', help='An IPv4 address')
 
     # Domain report subparser
     domain_report_parser = subparsers.add_parser('domain-report',
@@ -330,8 +334,8 @@ def main():
     config_file = os.path.expanduser(args.config)
     try:
         api_key = parse_config(config_file)
-    except configparser.Error as e:
-        error(e.message)
+    except configparser.Error as err:
+        error(err.message)
 
     if api_key is None:
         error('An API key must be specified in \'{}\''.format(config_file))

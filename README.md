@@ -66,7 +66,7 @@ Optional arguments:
  -h, --help  Show this help message and exit
  -o OUTPUT_DIR, --output-dir OUTPUT_DIR
              Output directory to write downloaded pcap file to
-             (defaults to current working directory)
+             (defaults to the current working directory)
 ```
 
 ### Search
@@ -94,11 +94,11 @@ Optional arguments:
  -h, --help  Show this help message and exit
  -o OUTPUT_DIR, --output-dir OUTPUT_DIR
              Output directory to write downloaded file to
-             (defaults to current working directory)
+             (defaults to the current working directory)
 ```
 
 ### URL Scan
-Submit a URL to be scanned.
+Submit URL(s) to be scanned.
 ```
 python vt_driver.py url-scan [-h] url [url ...]
 
