@@ -42,10 +42,13 @@ def parse_args():
     Return:
         The parsed command-line arguments.
     """
+    default_conf_file = os.path.join(os.path.expanduser('~'), '.vtapi')
+
     # Construct the main parser
     parser = argparse.ArgumentParser(description=('Interact with the '
                                                   'VirusTotal API.'))
-    parser.add_argument('-c', '--config', action='store', default='~/.vtapi',
+    parser.add_argument('-c', '--config', action='store',
+                        default=default_conf_file,
                         help='Path to the configuration file')
     subparsers = parser.add_subparsers(dest='command')
 
@@ -325,12 +328,15 @@ def main():
     args = parse_args()
 
     config_file = os.path.expanduser(args.config)
-    command = args.command
-    api_key = parse_config(config_file)
+    try:
+        api_key = parse_config(config_file)
+    except configparser.Error as e:
+        error(e.message)
 
     if api_key is None:
         error('An API key must be specified in \'{}\''.format(config_file))
 
+    command = args.command
     virus_total = VTPrivateAPI(api_key)
 
     if command == 'file-scan':
