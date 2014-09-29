@@ -25,6 +25,7 @@ try:
 except ImportError:
     import json
 
+import requests
 from virus_total_apis import PrivateApi as VTPrivateAPI
 
 
