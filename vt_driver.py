@@ -25,6 +25,7 @@ try:
 except ImportError:
     import json
 
+import requests
 from virus_total_apis import PrivateApi as VTPrivateAPI
 
 
@@ -154,7 +155,8 @@ def pretty_print_json(json_data, output=sys.stdout):
 
     Args:
         json_data: The JSON data to pretty-print.
-        output: A file-like object (stream) to pretty-print the JSON data to.
+        output: (optional) A file-like object (stream) to pretty-print the JSON
+        data to.
     """
     print(json.dumps(json_data, sort_keys=True, indent=4), file=output)
 
@@ -203,7 +205,8 @@ def file_report(virus_total, hash_list, output=sys.stdout):
         virus_total: VirusTotal API object.
         hash_list: A list of MD5/SHA1/SHA245 hashes to retrieve scan reports
         for.
-        output: A file-like object (stream) to pretty-print the file report to.
+        output: (optional) A file-like object (stream) to pretty-print the file
+        report to.
     """
     check_num_args(hash_list)
     response = virus_total.get_file_report(','.join(hash_list))
@@ -245,19 +248,45 @@ def network_traffic(virus_total, hash_, output_dir):
     with open(os.path.join(output_dir, hash_ + '.pcap'), 'wb') as out_file:
         out_file.write(response)
 
-
-def file_search(virus_total, query):
+def file_search(virus_total, query, offset=None, hashes=None):
     """Search for files.
 
     Args:
         virus_total: VirusTotal API object.
         query: Search query. The valid search modifiers are described at
         https://www.virustotal.com/intelligence/help/file-search
+        offset: (optional) The offset value returned by a previously identical
+        query, allowing for pagination of the results
+        hashes: (optional) Accumulated list of hashes returned by the search
+        operation.
     """
-    response = virus_total.file_search(query)
-    pretty_print_json(response)
+    response = virus_total.file_search(query, offset)
 
-    # TODO - implement pagenation
+    # Check the HTTP response code
+    if response.get('response_code') != requests.codes.ok:
+        pretty_print_json(response)
+        return
+
+    # Read the VirusTotal response code
+    results = response.get('results', {})
+    results_response_code = results.get('response_code', -1)
+
+    # Indicates an error with the query
+    if results_response_code == -1:
+        pretty_print_json(response)
+        return
+
+    # No error, add the results to our existing list of hashes
+    if hashes is None:
+        hashes = []
+    hashes.extend(results.get('hashes', []))
+
+    # No more results
+    if results_response_code == 0:
+        pretty_print_json(hashes)
+    # More results - paginate
+    elif results_response_code == 1:
+        file_search(virus_total, query, response.get('offset'), hashes)
 
 
 def file_download(virus_total, hash_, output_dir):
