@@ -250,7 +250,7 @@ def network_traffic(virus_total, hash_, output_dir):
         out_file.write(response)
 
 
-def file_search(virus_total, query, offset=None):
+def file_search(virus_total, query, offset=None, hashes=None):
     """Search for files.
 
     Args:
@@ -259,11 +259,36 @@ def file_search(virus_total, query, offset=None):
         https://www.virustotal.com/intelligence/help/file-search
         offset: Offset from the previous search query, thus allowing for
         pagenation of results
+        hashes: Accumulated list of hashes returned by the search
+        operation
     """
     response = virus_total.file_search(query, offset)
-    pretty_print_json(response)
 
-    # TODO - implement pagenation
+    # Check the HTTP response code
+    if response.get('response_code') != requests.codes.ok:
+        pretty_print_json(response)
+        return
+
+    # Read the VirusTotal response code
+    results = response.get('results', {})
+    results_response_code = results.get('response_code', -1)
+
+    # Indicates an error with the query
+    if results_response_code == -1:
+        pretty_print_json(response)
+        return
+
+    # No error, add the results to our existing list of hashes
+    if hashes is None:
+        hashes = []
+    hashes.extend(results.get('hashes', []))
+
+    # No more results
+    if results_response_code == 0:
+        pretty_print_json(hashes)
+    # More results - paginate
+    elif results_response_code == 1:
+        file_search(virus_total, query, response.get('offset'), hashes)
 
 
 def file_download(virus_total, hash_, output_dir):
