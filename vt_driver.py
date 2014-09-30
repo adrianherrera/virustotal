@@ -5,12 +5,15 @@ the VirusTotal private API has been implemented.
 
 It doesn't really do anything fancy with the JSON response other than
 pretty-printing it to the screen.
+
+:author: Adrian Herrera
 """
 
 from __future__ import print_function
 
-__author__ = 'Adrian Herrera'
-__email__ = 'adrian.herrera02@gmail.com'
+import argparse
+import os
+import sys
 
 try:
     import configparser
@@ -22,13 +25,11 @@ try:
 except ImportError:
     import json
 
-import argparse
-import os
-import sys
 from virus_total_apis import PrivateApi as VTPrivateAPI
 
+
 def error(*args):
-    """ Prints an error message to stderr and terminates.
+    """Prints an error message to stderr and terminates.
 
     Args:
         args: Variable-length arguments to print in the error message.
@@ -36,8 +37,9 @@ def error(*args):
     print('ERROR:', *args, file=sys.stderr)
     sys.exit(1)
 
+
 def parse_args():
-    """ Parse the command-line arguments.
+    """Parse the command-line arguments.
 
     Return:
         The parsed command-line arguments.
@@ -48,8 +50,7 @@ def parse_args():
     parser = argparse.ArgumentParser(description='Interact with the '
                                                  'VirusTotal API.')
     parser.add_argument('-c', '--config', action='store',
-                        default=default_conf_file,
-                        help='Path to the configuration file')
+        default=default_conf_file, help='Path to the configuration file')
     subparsers = parser.add_subparsers(dest='command')
 
     # File scan subparser
@@ -59,18 +60,16 @@ def parse_args():
 
     # Rescan subparser
     rescan_parser = subparsers.add_parser('rescan',
-        help=('Rescan previously submitted file(s) without having to '
-              'resubmit, thus saving bandwidth'))
+        help='Rescan previously submitted file(s) without having to resubmit, '
+             'thus saving bandwidth')
     rescan_parser.add_argument('hash', nargs='+', action='store',
-                               help='List of MD5/SHA1/SHA256 hashes (up to '
-                                    '25)')
+        help='List of MD5/SHA1/SHA256 hashes (up to 25)')
 
     # File report subparser
     file_report_parser = subparsers.add_parser('file-report',
         help='Retrieve file scan results')
     file_report_parser.add_argument('hash', nargs='+', action='store',
-                                    help='List of MD5/SHA1/SHA256 hashes (up '
-                                         'to 25)')
+        help='List of MD5/SHA1/SHA256 hashes (up to 25)')
 
     # Behaviour subparser
     behaviour_parser = subparsers.add_parser('behaviour',
@@ -85,38 +84,35 @@ def parse_args():
     pcap_parser.add_argument('hash', action='store',
                              help='An MD5/SHA1/SHA256 hash')
     pcap_parser.add_argument('-o', '--output-dir', action='store',
-                             default=os.getcwd(),
-                             help='Output directory to write downloaded pcap '
-                                  'file to (defaults to the current working '
-                                  'directory)')
+        default=os.getcwd(),
+        help='Output directory to write downloaded pcap file to (defaults to '
+             'the current working directory)')
 
     # Search subparser
     search_parser = subparsers.add_parser('search',
-        help='Search for files')
+                                          help='Search for files')
     search_parser.add_argument('query', action='store',
-                               help='The search query, in accordance with '
-                                    'https://www.virustotal.com/intelligence/'
-                                    'help/file-search/#search-modifiers')
+        help='The search query, in accordance with https://www.virustotal.com/'
+             'intelligence/help/file-search/#search-modifiers')
 
     # File download subparser
     download_parser = subparsers.add_parser('download',
-        help='Download a file')
+                                            help='Download a file')
     download_parser.add_argument('hash', action='store',
                                  help='An MD5/SHA1/SHA256 hash')
     download_parser.add_argument('-o', '--output-dir', action='store',
-                                 default=os.getcwd(),
-                                 help='Output directory to write downloaded '
-                                      'file to (defaults to the current '
-                                      'working directory)')
+        default=os.getcwd(),
+        help='Output directory to write downloaded file to (defaults to the '
+        'current working directory)')
 
     # URL scan subparser
     url_scan_parser = subparsers.add_parser('url-scan',
-        help='Submit URL(s) to be scanned')
+                                            help='Submit URL(s) to be scanned')
     url_scan_parser.add_argument('url', nargs='+', help='URL(s) (up to 25)')
 
     # URL report subparser
     url_report_parser = subparsers.add_parser('url-report',
-        help='Get URL scan results')
+                                              help='Get URL scan results')
     url_report_parser.add_argument('url', nargs='+', help='URL(s) (up to 25)')
 
     # IP report subparser
@@ -132,8 +128,9 @@ def parse_args():
 
     return parser.parse_args()
 
+
 def parse_config(conf_file):
-    """ Parse the config file.
+    """Parse the config file.
 
     Args:
         conf_file: Path to the config file to parse.
@@ -151,8 +148,9 @@ def parse_config(conf_file):
 
     return None
 
+
 def pretty_print_json(json_data, output=sys.stdout):
-    """ Pretty-print JSON data.
+    """Pretty-print JSON data.
 
     Args:
         json_data: The JSON data to pretty-print.
@@ -160,9 +158,10 @@ def pretty_print_json(json_data, output=sys.stdout):
     """
     print(json.dumps(json_data, sort_keys=True, indent=4), file=output)
 
+
 def check_num_args(args):
-    """ Checks the number of arguments does not exceed the maximum
-    allowed by the VirusTotal private API.
+    """Checks the number of arguments does not exceed the maximum allowed by
+    the VirusTotal private API.
 
     Args:
         hash_list: A list of arguments.
@@ -171,8 +170,9 @@ def check_num_args(args):
         error('The VT Private API only allows a maximum of 25 arguments to be '
               'specified in a single query')
 
+
 def file_scan(virus_total, file_to_scan):
-    """ Submit a single file to be scanned by VirusTotal.
+    """Submit a single file to be scanned by VirusTotal.
 
     Args:
         virus_total: VirusTotal API object.
@@ -181,8 +181,9 @@ def file_scan(virus_total, file_to_scan):
     response = virus_total.scan_file(file_to_scan)
     pretty_print_json(response)
 
+
 def file_rescan(virus_total, hash_list):
-    """ Rescan a file (designated by an MD5/SHA1/SHA256 hash) already uploaded
+    """Rescan a file (designated by an MD5/SHA1/SHA256 hash) already uploaded
     to VirusTotal.
 
     Args:
@@ -193,8 +194,9 @@ def file_rescan(virus_total, hash_list):
     response = virus_total.rescan_file(','.join(hash_list))
     pretty_print_json(response)
 
+
 def file_report(virus_total, hash_list, output=sys.stdout):
-    """ Retrieves a concluded scan report for a given file (designated by an
+    """Retrieves a concluded scan report for a given file (designated by an
     MD5/SHA1/SHA256 hash).
 
     Args:
@@ -207,8 +209,9 @@ def file_report(virus_total, hash_list, output=sys.stdout):
     response = virus_total.get_file_report(','.join(hash_list))
     pretty_print_json(response, output)
 
+
 def file_behaviour(virus_total, hash_):
-    """ Get the behaviour for a given file (designated by an MD5/SHA1/SHA256
+    """Get the behaviour for a given file (designated by an MD5/SHA1/SHA256
     hash) as it executes in a sandbox.
 
     Args:
@@ -218,8 +221,9 @@ def file_behaviour(virus_total, hash_):
     response = virus_total.get_file_behaviour(hash_)
     pretty_print_json(response)
 
+
 def network_traffic(virus_total, hash_, output_dir):
-    """ Get the network traffic for a given file (designated by an MD5/SHA1/
+    """Get the network traffic for a given file (designated by an MD5/SHA1/
     SHA256 hash) as it executes in a sandbox.
 
     Args:
@@ -241,8 +245,9 @@ def network_traffic(virus_total, hash_, output_dir):
     with open(os.path.join(output_dir, hash_ + '.pcap'), 'wb') as out_file:
         out_file.write(response)
 
+
 def search(virus_total, query):
-    """ Search for files.
+    """Search for files.
 
     Args:
         virus_total: VirusTotal API object.
@@ -254,9 +259,10 @@ def search(virus_total, query):
 
     # TODO - implement pagenation
 
+
 def file_download(virus_total, hash_, output_dir):
-    """ Download a file designated by an MD5/SHA1/SHA256 hash. Also displays
-    the report for the downloaded file.
+    """Download a file designated by an MD5/SHA1/SHA256 hash. Also displays the
+    report for the downloaded file.
 
     Args:
         virus_total: VirusTotal API object.
@@ -282,8 +288,9 @@ def file_download(virus_total, hash_, output_dir):
     with open(os.path.join(output_dir, hash_ + '.report'), 'w') as out_file:
         file_report(virus_total, [hash_], out_file)
 
+
 def url_scan(virus_total, url_list):
-    """ Submit a list of URLs to scan.
+    """Submit a list of URLs to scan.
 
     Args:
         virus_total: VirusTotal API object.
@@ -293,8 +300,9 @@ def url_scan(virus_total, url_list):
     response = virus_total.scan_url('\n'.join(url_list))
     pretty_print_json(response)
 
+
 def url_report(virus_total, url_list):
-    """ Retrieves a scan report for a given URL.
+    """Retrieves a scan report for a given URL.
 
     Args:
         virus_total: VirusTotal API object.
@@ -304,8 +312,9 @@ def url_report(virus_total, url_list):
     response = virus_total.get_url_report('\n'.join(url_list))
     pretty_print_json(response)
 
+
 def ip_report(virus_total, ip_address):
-    """ Retrieves a scan report for a given IP address.
+    """Retrieves a scan report for a given IP address.
 
     Args:
         virus_total: VirusTotal API object.
@@ -314,8 +323,9 @@ def ip_report(virus_total, ip_address):
     response = virus_total.get_ip_report(ip_address)
     pretty_print_json(response)
 
+
 def domain_report(virus_total, domain_name):
-    """ Retrieves a scan report for a given domain name.
+    """Retrieves a scan report for a given domain name.
 
     Args:
         virus_total: VirusTotal API object.
@@ -324,8 +334,9 @@ def domain_report(virus_total, domain_name):
     response = virus_total.get_domain_report(domain_name)
     pretty_print_json(response)
 
+
 def main():
-    """ The main function.
+    """The main function.
 
     Parse the command-line arguments and take appropriate action.
     """
