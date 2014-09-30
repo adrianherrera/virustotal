@@ -246,7 +246,7 @@ def network_traffic(virus_total, hash_, output_dir):
         out_file.write(response)
 
 
-def search(virus_total, query):
+def file_search(virus_total, query):
     """Search for files.
 
     Args:
@@ -365,7 +365,7 @@ def main():
     elif command == 'pcap':
         network_traffic(virus_total, args.hash, args.output_dir)
     elif command == 'search':
-        search(virus_total, args.query)
+        file_search(virus_total, args.query)
     elif command == 'download':
         file_download(virus_total, args.hash, args.output_dir)
     elif command == 'url-scan':
