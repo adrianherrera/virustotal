@@ -279,8 +279,8 @@ def file_download(virus_total, hash_, output_dir):
 
     # Get the report for this sample as well. Write the report to a file in the
     # output directory specified
-    file_report(virus_total, [hash_],
-                os.path.join(output_dir, hash_ + '.report'))
+    with open(os.path.join(output_dir, hash_ + '.report'), 'w') as out_file:
+        file_report(virus_total, [hash_], out_file)
 
 def url_scan(virus_total, url_list):
     """ Submit a list of URLs to scan.
