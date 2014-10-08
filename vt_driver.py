@@ -92,8 +92,9 @@ def parse_args():
     search_parser = subparsers.add_parser('search',
                                           help='Search for files')
     search_parser.add_argument('query', action='store',
-        help='The search query, in accordance with https://www.virustotal.com/'
-             'intelligence/help/file-search/#search-modifiers')
+        help='A comma-separated search query. See https://www.virustotal.com/'
+             'intelligence/help/file-search/ for a list of valid search '
+             'modifiers')
 
     # File download subparser
     download_parser = subparsers.add_parser('download',
@@ -365,7 +366,7 @@ def main():
     elif command == 'pcap':
         network_traffic(virus_total, args.hash, args.output_dir)
     elif command == 'search':
-        file_search(virus_total, args.query)
+        file_search(virus_total, args.query.replace(',', ' '))
     elif command == 'download':
         file_download(virus_total, args.hash, args.output_dir)
     elif command == 'url-scan':
