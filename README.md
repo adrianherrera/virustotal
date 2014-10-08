@@ -6,7 +6,7 @@ A simple [Python](http://python.org)-based command-line script to interact with 
 * [virustotal-api](https://pypi.python.org/pypi/virustotal-api)
 
 ## Usage
-### File scan
+### File Scan
 Submit a file to be scanned.
 ```
 python vt_driver.py file-scan [-h] file
@@ -72,14 +72,18 @@ Optional arguments:
 ### Search
 Search for files.
 ```
-python vt_driver.py search [-h] query
+python vt_driver.py search [-h] [-o OFFSET] query
 
 Positional arguments:
- query       The search query, in accordance with
+ query       A comma-separated search query. See
              https://www.virustotal.com/intelligence/help/file-search/#search-modifiers
+             for valid search modifiers
 
 Optional arguments:
  -h, --help  Show this help message and exit
+ -o, --offset
+             Offset returned by the previous search query. Allows for
+             pagenation of results
 ```
 
 ### Download
