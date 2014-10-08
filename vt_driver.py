@@ -95,6 +95,9 @@ def parse_args():
         help='A comma-separated search query. See https://www.virustotal.com/'
              'intelligence/help/file-search/ for a list of valid search '
              'modifiers')
+    search_parser.add_argument('-o', '--offset', action='store', default=None,
+                               help='Offset returned by the previous search '
+                                    'query. Allows for pagenation of results')
 
     # File download subparser
     download_parser = subparsers.add_parser('download',
@@ -247,15 +250,17 @@ def network_traffic(virus_total, hash_, output_dir):
         out_file.write(response)
 
 
-def file_search(virus_total, query):
+def file_search(virus_total, query, offset=None):
     """Search for files.
 
     Args:
         virus_total: VirusTotal API object.
         query: Search query. The valid search modifiers are described at
         https://www.virustotal.com/intelligence/help/file-search
+        offset: Offset from the previous search query, thus allowing for
+        pagenation of results
     """
-    response = virus_total.file_search(query)
+    response = virus_total.file_search(query, offset)
     pretty_print_json(response)
 
     # TODO - implement pagenation
@@ -366,7 +371,7 @@ def main():
     elif command == 'pcap':
         network_traffic(virus_total, args.hash, args.output_dir)
     elif command == 'search':
-        file_search(virus_total, args.query.replace(',', ' '))
+        file_search(virus_total, args.query.replace(',', ' '), args.offset)
     elif command == 'download':
         file_download(virus_total, args.hash, args.output_dir)
     elif command == 'url-scan':
