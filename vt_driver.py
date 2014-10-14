@@ -96,6 +96,9 @@ def parse_args():
         help='A comma-separated search query. See https://www.virustotal.com/'
              'intelligence/help/file-search/ for a list of valid search '
              'modifiers')
+    search_parser.add_argument('-n', '--num-results', action='store', type=int,
+                               default=300,
+                               help='Maximum number of results to return')
     search_parser.add_argument('-o', '--offset', action='store', default=None,
                                help='Offset returned by the previous search '
                                     'query. Allows for pagenation of results')
@@ -251,13 +254,14 @@ def network_traffic(virus_total, hash_, output_dir):
         out_file.write(response)
 
 
-def file_search(virus_total, query, offset=None, hashes=None):
+def file_search(virus_total, query, max_results=300, offset=None, hashes=None):
     """Search for files.
 
     Args:
         virus_total: VirusTotal API object.
         query: Search query. The valid search modifiers are described at
         https://www.virustotal.com/intelligence/help/file-search
+        max_results: Maximum number of results to return
         offset: Offset from the previous search query, thus allowing for
         pagenation of results
         hashes: Accumulated list of hashes returned by the search
@@ -283,13 +287,15 @@ def file_search(virus_total, query, offset=None, hashes=None):
     if hashes is None:
         hashes = []
     hashes.extend(results.get('hashes', []))
+    num_hashes = len(hashes)
 
     # No more results
-    if results_response_code == 0:
-        pretty_print_json(hashes)
+    if results_response_code == 0 or num_hashes >= max_results:
+        pretty_print_json(hashes[:max_results])
     # More results - paginate
     elif results_response_code == 1:
-        file_search(virus_total, query, response.get('offset'), hashes)
+        file_search(virus_total, query, max_results, response.get('offset'),
+                    hashes)
 
 
 def file_download(virus_total, hash_, output_dir):
@@ -397,7 +403,8 @@ def main():
     elif command == 'pcap':
         network_traffic(virus_total, args.hash, args.output_dir)
     elif command == 'search':
-        file_search(virus_total, args.query.replace(',', ' '), args.offset)
+        file_search(virus_total, args.query.replace(',', ' '),
+                    args.num_results, args.offset)
     elif command == 'download':
         file_download(virus_total, args.hash, args.output_dir)
     elif command == 'url-scan':
