@@ -291,7 +291,8 @@ def file_search(virus_total, query, max_results=300, offset=None, hashes=None):
 
     # No more results
     if results_response_code == 0 or num_hashes >= max_results:
-        pretty_print_json(hashes[:max_results])
+        response['results']['hashes'] = hashes[:max_results]
+        pretty_print_json(response)
     # More results - paginate
     elif results_response_code == 1:
         file_search(virus_total, query, max_results, response.get('offset'),
