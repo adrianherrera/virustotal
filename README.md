@@ -2,6 +2,9 @@
 
 A simple [Python](http://python.org)-based command-line script to interact with [blacktop](https://github.com/blacktop)'s [virustotal-api](https://pypi.python.org/pypi/virustotal-api).
 
+## License
+GPLv3
+
 ## Requirements
 * [virustotal-api](https://pypi.python.org/pypi/virustotal-api)
 

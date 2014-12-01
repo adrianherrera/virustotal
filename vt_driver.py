@@ -7,6 +7,7 @@ It doesn't really do anything fancy with the JSON response other than
 pretty-printing it to the screen.
 
 :author: Adrian Herrera
+:license: GPLv3
 """
 
 from __future__ import print_function
