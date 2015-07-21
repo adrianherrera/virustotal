@@ -1,5 +1,6 @@
 #!/usr/bin/python
-""" Simple command-line script to interact with the virustotal-api
+"""
+Simple command-line script to interact with the virustotal-api
 (https://github.com/blacktop/virustotal-api). Only the main functionality of
 the VirusTotal private API has been implemented.
 
@@ -31,20 +32,22 @@ from virus_total_apis import PrivateApi as VTPrivateAPI
 
 
 def error(*args):
-    """Prints an error message to stderr and terminates.
+    """
+    Prints an error message to stderr and terminates.
 
     Args:
-        args: Variable-length arguments to print in the error message.
+        args: Variable-length arguments to print in the error message
     """
     print('ERROR:', *args, file=sys.stderr)
     sys.exit(1)
 
 
 def parse_args():
-    """Parse the command-line arguments.
+    """
+    Parse the command-line arguments.
 
-    Return:
-        The parsed command-line arguments.
+    Returns:
+        The parsed command-line arguments
     """
     default_conf_file = os.path.join(os.path.expanduser('~'), '.vtapi')
 
@@ -139,13 +142,15 @@ def parse_args():
 
 
 def parse_config(conf_file):
-    """Parse the config file.
+    """
+    Parse the config file.
 
     Args:
-        conf_file: Path to the config file to parse.
+        conf_file: Path to the config file to parse
 
-    Return:
-        The API key as recorded in the configuration file.
+    Returns:
+        The API key as recorded in the configuration file, or `None` if the
+        config file doesn't exist
     """
     if os.path.exists(conf_file):
         config = configparser.SafeConfigParser()
@@ -159,21 +164,23 @@ def parse_config(conf_file):
 
 
 def pretty_print_json(json_data, output=sys.stdout):
-    """Pretty-print JSON data.
+    """
+    Pretty-print JSON data.
 
     Args:
-        json_data: The JSON data to pretty-print.
-        output: A file-like object (stream) to pretty-print the JSON data to.
+        json_data: The JSON data to pretty-print
+        output: A file-like object (stream) to pretty-print the JSON data to
     """
     print(json.dumps(json_data, sort_keys=True, indent=4), file=output)
 
 
 def check_num_args(args):
-    """Checks the number of arguments does not exceed the maximum allowed by
-    the VirusTotal private API.
+    """
+    Checks the number of arguments does not exceed the maximum allowed by the
+    VirusTotal private API.
 
     Args:
-        hash_list: A list of arguments.
+        hash_list: A list of arguments
     """
     if len(args) > 25:
         error('The VT Private API only allows a maximum of 25 arguments to be '
@@ -181,23 +188,25 @@ def check_num_args(args):
 
 
 def file_scan(virus_total, file_to_scan):
-    """Submit a single file to be scanned by VirusTotal.
+    """
+    Submit a single file to be scanned by VirusTotal.
 
     Args:
-        virus_total: VirusTotal API object.
-        file_to_scan: The file path of a file to scan.
+        virus_total: VirusTotal API object
+        file_to_scan: The file path of a file to scan
     """
     response = virus_total.scan_file(file_to_scan)
     pretty_print_json(response)
 
 
 def file_rescan(virus_total, hash_list):
-    """Rescan a file (designated by an MD5/SHA1/SHA256 hash) already uploaded
-    to VirusTotal.
+    """
+    Rescan a file (designated by an MD5/SHA1/SHA256 hash) already uploaded to
+    VirusTotal.
 
     Args:
-        virus_total: VirusTotal API object.
-        hash_list: A list of MD5/SHA1/SHA256 hashes to be rescanned.
+        virus_total: VirusTotal API object
+        hash_list: A list of MD5/SHA1/SHA256 hashes to be rescanned
     """
     check_num_args(hash_list)
     response = virus_total.rescan_file(','.join(hash_list))
@@ -205,14 +214,15 @@ def file_rescan(virus_total, hash_list):
 
 
 def file_report(virus_total, hash_list, output=sys.stdout):
-    """Retrieves a concluded scan report for a given file (designated by an
+    """
+    Retrieves a concluded scan report for a given file (designated by an
     MD5/SHA1/SHA256 hash).
 
     Args:
-        virus_total: VirusTotal API object.
+        virus_total: VirusTotal API object
         hash_list: A list of MD5/SHA1/SHA245 hashes to retrieve scan reports
-        for.
-        output: A file-like object (stream) to pretty-print the file report to.
+        for
+        output: A file-like object (stream) to pretty-print the file report to
     """
     check_num_args(hash_list)
     response = virus_total.get_file_report(','.join(hash_list))
@@ -220,25 +230,27 @@ def file_report(virus_total, hash_list, output=sys.stdout):
 
 
 def file_behaviour(virus_total, hash_):
-    """Get the behaviour for a given file (designated by an MD5/SHA1/SHA256
-    hash) as it executes in a sandbox.
+    """
+    Get the behaviour for a given file (designated by an MD5/SHA1/SHA256 hash)
+    as it executes in a sandbox.
 
     Args:
-        virus_total: VirusTotal API objet.
-        hash_: An MD5/SHA1/SHA256 hash to retrieve a behaviour report for.
+        virus_total: VirusTotal API object
+        hash_: An MD5/SHA1/SHA256 hash to retrieve a behaviour report for
     """
     response = virus_total.get_file_behaviour(hash_)
     pretty_print_json(response)
 
 
 def network_traffic(virus_total, hash_, output_dir):
-    """Get the network traffic for a given file (designated by an MD5/SHA1/
-    SHA256 hash) as it executes in a sandbox.
+    """
+    Get the network traffic for a given file (designated by an MD5/SHA1/SHA256
+    hash) as it executes in a sandbox.
 
     Args:
-        virus_total: VirusTotal API object.
-        hash_: An MD5/SHA1/SHA256 hash to retrieve a pcap file for.
-        output_dir: The directory to write the downloaded pcap file to.
+        virus_total: VirusTotal API object
+        hash_: An MD5/SHA1/SHA256 hash to retrieve a pcap file for
+        output_dir: The directory to write the downloaded pcap file to
     """
     if not os.path.isdir(output_dir):
         error('\'{}\' is not a valid output directory'.format(output_dir))
@@ -246,7 +258,7 @@ def network_traffic(virus_total, hash_, output_dir):
     response = virus_total.get_network_traffic(hash_)
 
     # Will return a dict on failure
-    if type(response) is dict:
+    if isinstance(response, dict):
         pretty_print_json(response)
         return
 
@@ -256,10 +268,11 @@ def network_traffic(virus_total, hash_, output_dir):
 
 
 def file_search(virus_total, query, max_results=300, offset=None, hashes=None):
-    """Search for files.
+    """
+    Search for files.
 
     Args:
-        virus_total: VirusTotal API object.
+        virus_total: VirusTotal API object
         query: Search query. The valid search modifiers are described at
         https://www.virustotal.com/intelligence/help/file-search
         max_results: Maximum number of results to return
@@ -301,13 +314,14 @@ def file_search(virus_total, query, max_results=300, offset=None, hashes=None):
 
 
 def file_download(virus_total, hash_, output_dir):
-    """Download a file designated by an MD5/SHA1/SHA256 hash. Also displays the
+    """
+    Download a file designated by an MD5/SHA1/SHA256 hash. Also displays the
     report for the downloaded file.
 
     Args:
-        virus_total: VirusTotal API object.
-        hash_: The MD5/SHA1/SHA256 hash of the file to download.
-        output_dir: The directory to write the downloaded file to.
+        virus_total: VirusTotal API object
+        hash_: The MD5/SHA1/SHA256 hash of the file to download
+        output_dir: The directory to write the downloaded file to
     """
     if not os.path.isdir(output_dir):
         error('\'{}\' is not a valid output directory'.format(output_dir))
@@ -315,7 +329,7 @@ def file_download(virus_total, hash_, output_dir):
     response = virus_total.get_file(hash_)
 
     # Will return a dict on failure
-    if type(response) is dict:
+    if isinstance(response, dict):
         pretty_print_json(response)
         return
 
@@ -330,11 +344,12 @@ def file_download(virus_total, hash_, output_dir):
 
 
 def url_scan(virus_total, url_list):
-    """Submit a list of URLs to scan.
+    """
+    Submit a list of URLs to scan.
 
     Args:
-        virus_total: VirusTotal API object.
-        url_list: A list of URLs to scan.
+        virus_total: VirusTotal API object
+        url_list: A list of URLs to scan
     """
     check_num_args(url_list)
     response = virus_total.scan_url('\n'.join(url_list))
@@ -342,11 +357,12 @@ def url_scan(virus_total, url_list):
 
 
 def url_report(virus_total, url_list):
-    """Retrieves a scan report for a given URL.
+    """
+    Retrieves a scan report for a given URL.
 
     Args:
-        virus_total: VirusTotal API object.
-        hash_list: A list of URLs to retrieve scan reports for.
+        virus_total: VirusTotal API object
+        hash_list: A list of URLs to retrieve scan reports for
     """
     check_num_args(url_list)
     response = virus_total.get_url_report('\n'.join(url_list))
@@ -354,29 +370,32 @@ def url_report(virus_total, url_list):
 
 
 def ip_report(virus_total, ip_address):
-    """Retrieves a scan report for a given IP address.
+    """
+    Retrieves a scan report for a given IP address.
 
     Args:
-        virus_total: VirusTotal API object.
-        ip_address: IPv4 address.
+        virus_total: VirusTotal API object
+        ip_address: IPv4 address
     """
     response = virus_total.get_ip_report(ip_address)
     pretty_print_json(response)
 
 
 def domain_report(virus_total, domain_name):
-    """Retrieves a scan report for a given domain name.
+    """
+    Retrieves a scan report for a given domain name.
 
     Args:
-        virus_total: VirusTotal API object.
-        domain_name: Domain name.
+        virus_total: VirusTotal API object
+        domain_name: Domain name
     """
     response = virus_total.get_domain_report(domain_name)
     pretty_print_json(response)
 
 
 def main():
-    """The main function.
+    """
+    The main function.
 
     Parse the command-line arguments and take appropriate action.
     """
@@ -417,6 +436,7 @@ def main():
         ip_report(virus_total, args.ip)
     elif command == 'domain-report':
         domain_report(virus_total, args.domain)
+
 
 if __name__ == '__main__':
     main()
