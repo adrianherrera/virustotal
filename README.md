@@ -8,6 +8,11 @@ GPLv3
 ## Requirements
 * [virustotal-api](https://pypi.python.org/pypi/virustotal-api)
 
+## Installation
+```
+python setup.py install
+```
+
 ## Usage
 ### File Scan
 Submit a file to be scanned.
