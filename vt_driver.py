@@ -170,7 +170,7 @@ def _parse_config(conf_file):
         config = configparser.SafeConfigParser()
         config.read(conf_file)
 
-        return config.get('vt', 'apikey')
+        return config.get('virustotal', 'apikey')
     else:
         _error('Config file \'{}\' does not exist'.format(conf_file))
 

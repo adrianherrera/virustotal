@@ -14,6 +14,16 @@ python setup.py install
 ```
 
 ## Usage
+### Configuration File
+A configuration file is used to store your VirusTotal API key. It uses the following format:
+
+```
+[virustotal]
+vtapi: <your API key here>
+```
+
+The configuration file can be specified using the `--config` command-line option. By default `$HOME/.vtapi` is used.
+
 ### File Scan
 Submit a file to be scanned.
 ```
