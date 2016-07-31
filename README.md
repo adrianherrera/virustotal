@@ -19,7 +19,7 @@ A configuration file is used to store your VirusTotal API key. It uses the follo
 
 ```
 [virustotal]
-vtapi: <your API key here>
+apikey: <your API key here>
 ```
 
 The configuration file can be specified using the `--config` command-line option. By default `$HOME/.vtapi` is used.
