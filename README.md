@@ -23,7 +23,6 @@ apikey: <your API key here>
 
 The configuration file can be specified using the `--config` command-line option. By default `$HOME/.vtapi` is used.
 
-
 ## Usage
 ### File Scan
 Submit a file to be scanned.
