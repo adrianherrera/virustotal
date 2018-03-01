@@ -83,6 +83,17 @@ def parse_args():
                                     help='List of MD5/SHA1/SHA256 hashes (up '
                                          'to 25)')
 
+    # File download subparser
+    file_download_parser = subparsers.add_parser('file-download',
+                                                 help='Download a file w/o '
+                                                      'gathering report')
+    file_download_parser.add_argument('hash', action='store',
+                                 help='An MD5/SHA1/SHA256 hash')
+    file_download_parser.add_argument('-o', '--output-dir', action='store',
+                                 default=os.getcwd(),
+                                 help='Output directory to write downloaded '
+                                      'file to (defaults to the current '
+                                      'working directory)')
     # Behaviour subparser
     behaviour_parser = subparsers.add_parser('behaviour',
                                              help='Get a report on the '
@@ -120,7 +131,8 @@ def parse_args():
 
     # File download subparser
     download_parser = subparsers.add_parser('download',
-                                            help='Download a file')
+                                            help='Download a file and gather'
+                                                 ' it\'s report')
     download_parser.add_argument('hash', action='store',
                                  help='An MD5/SHA1/SHA256 hash')
     download_parser.add_argument('-o', '--output-dir', action='store',
@@ -327,7 +339,7 @@ def file_search(virus_total, query, max_results=300, offset=None,
                     hashes)
 
 
-def file_download(virus_total, hash, output_dir):
+def file_download(virus_total, hash, output_dir, report=True):
     """
     Download a file designated by an MD5/SHA1/SHA256 hash. Also displays the
     report for the downloaded file.
@@ -350,6 +362,10 @@ def file_download(virus_total, hash, output_dir):
     # Otherwise write the downloaded content to disk
     with open(os.path.join(output_dir, hash), 'wb') as out_file:
         out_file.write(response)
+
+    # Optionally skip report step
+    if not report:
+        return
 
     # Get the report for this sample as well. Write the report to a file in the
     # output directory specified
@@ -431,6 +447,8 @@ def main():
         file_rescan(virus_total, args.hash)
     elif command == 'file-report':
         file_report(virus_total, args.hash)
+    elif command == 'file-download':
+        file_download(virus_total, args.hash, args.output_dir, report=False)
     elif command == 'behaviour':
         file_behaviour(virus_total, args.hash)
     elif command == 'pcap':
