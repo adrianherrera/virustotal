@@ -88,12 +88,13 @@ def parse_args():
                                                  help='Download a file w/o '
                                                       'gathering report')
     file_download_parser.add_argument('hash', action='store',
-                                 help='An MD5/SHA1/SHA256 hash')
+                                      help='An MD5/SHA1/SHA256 hash')
     file_download_parser.add_argument('-o', '--output-dir', action='store',
-                                 default=os.getcwd(),
-                                 help='Output directory to write downloaded '
-                                      'file to (defaults to the current '
-                                      'working directory)')
+                                      default=os.getcwd(),
+                                      help='Output directory to write '
+                                           'downloaded file to (defaults '
+                                           'to the current working '
+                                           'directory)')
     # Behaviour subparser
     behaviour_parser = subparsers.add_parser('behaviour',
                                              help='Get a report on the '
