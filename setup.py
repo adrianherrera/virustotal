@@ -7,7 +7,7 @@ setup(
     long_description=open('README.md').read(),
     author='Adrian Herrera',
     url='https://github.com/adrianherrera/virustotal',
-    version='0.10',
+    version='0.11',
     license='GNU General Public License v3',
     install_requires=[
         'requests',
